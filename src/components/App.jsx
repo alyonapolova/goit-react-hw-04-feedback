@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Section,
   Statistics,
@@ -7,59 +7,85 @@ import {
 } from './Feedback/Feedback';
 import { FeedbackDiv } from './Feedback/Feedback.styled';
 import PropTypes from 'prop-types';
-export class App extends Component {
-  state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
-    clickFeedback: false,
+
+function App() {
+  const [good, setGood] = useState(0);
+  const [neutral, setNeutral] = useState(0);
+  const [bad, setBad] = useState(0);
+  const [clickFeedback, setClickFeedback] = useState(false);
+  const [totalFeedback, setTotalFeedback] = useState(0);
+  const [positivePercentage, setPositivePercentage] = useState(0);
+
+  const onLeaveFeedback = option => {
+    switch (option) {
+      case 'Good':
+        setGood(prev => prev + 1);
+        break;
+      case 'Neutral':
+        setNeutral(prev => prev + 1);
+        break;
+      case 'Bad':
+        setBad(prev => prev + 1);
+        break;
+      default:
+        break;
+    }
+    setClickFeedback(true);
   };
 
-  onLeaveFeedback = option => {
-    option = option.toLowerCase();
-    this.setState(prevState => ({
-      [option]: prevState[option] + 1,
-      clickFeedback: true,
-    }));
-  };
+  // const onLeaveFeedbackGood = () => {
+  //   setGood(prev => prev + 1);
+  //   setClickFeedback(true);
+  // };
+  // const onLeaveFeedbackNeutral = () => {
+  //   setNeutral(prev => prev + 1);
+  //   setClickFeedback(true);
+  // };
+  // const onLeaveFeedbackBad = () => {
+  //   setBad(prev => prev + 1);
+  //   setClickFeedback(true);
+  // };
 
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
-    return good + neutral + bad;
-  };
+  useEffect(() => {
+    const newTotalFeedback = good + neutral + bad;
+    setTotalFeedback(newTotalFeedback);
+  }, [good, neutral, bad]);
 
-  countPositiveFeedbackPercentage = () => {
-    const { good } = this.state;
-    const total = this.countTotalFeedback(this.state);
-    return total > 0 ? ((100 * good) / total).toFixed(0) : 0;
-  };
+  useEffect(() => {
+    const newPositivePercentage =
+      totalFeedback > 0 ? Number(((100 * good) / totalFeedback).toFixed(0)) : 0;
+    setPositivePercentage(newPositivePercentage);
+    //console.log(typeof newPositivePercentage);
+  }, [good, neutral, bad, totalFeedback]);
 
-  render() {
-    const { good, neutral, bad } = this.state;
-    return (
-      <FeedbackDiv>
-        <Section title="Please leave feedback">
-          <FeedbackOptions
-            options={['Good', 'Neutral', 'Bad']}
-            onLeaveFeedback={this.onLeaveFeedback}
-          ></FeedbackOptions>
-          {this.state.clickFeedback ? (
-            <Statistics
-              good={good}
-              neutral={neutral}
-              bad={bad}
-              total={this.countTotalFeedback()}
-              positivePercentage={this.countPositiveFeedbackPercentage()}
-            ></Statistics>
-          ) : (
-            <Notification message="There is no feedback"></Notification>
-          )}
-        </Section>
-      </FeedbackDiv>
-    );
-  }
+  return (
+    <FeedbackDiv>
+      <Section title="Please leave feedback">
+        <FeedbackOptions
+          options={['Good', 'Neutral', 'Bad']}
+          onLeaveFeedback={onLeaveFeedback}
+          // onLeaveFeedbackGood={onLeaveFeedbackGood}
+          // onLeaveFeedbackNeutral={onLeaveFeedbackNeutral}
+          // onLeaveFeedbackBad={onLeaveFeedbackBad}
+        ></FeedbackOptions>
+        {clickFeedback ? (
+          <Statistics
+            good={good}
+            neutral={neutral}
+            bad={bad}
+            total={totalFeedback}
+            positivePercentage={positivePercentage}
+          ></Statistics>
+        ) : (
+          <Notification message="There is no feedback"></Notification>
+        )}
+      </Section>
+    </FeedbackDiv>
+  );
 }
 
 App.propTypes = {
   clickFeedback: PropTypes.bool.isRequired,
 };
+
+export default App;

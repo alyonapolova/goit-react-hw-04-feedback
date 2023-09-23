@@ -1,5 +1,6 @@
 import { FeedbackBtnDiv, FeedbackBtn, FeedbackText } from './Feedback.styled';
 import PropTypes from 'prop-types';
+
 export const Section = ({ title, children }) => (
   <div>
     <h1>{title}</h1>
@@ -25,15 +26,27 @@ export const Statistics = ({
   );
 };
 
-export const FeedbackOptions = ({ options, onLeaveFeedback }) => {
+export const FeedbackOptions = ({
+  options,
+  onLeaveFeedback,
+  // onLeaveFeedbackGood,
+  // onLeaveFeedbackNeutral,
+  // onLeaveFeedbackBad,
+}) => {
   return (
     <FeedbackBtnDiv>
-      {' '}
-      {options.map(option => (
-        <FeedbackBtn key={option} onClick={() => onLeaveFeedback(option)}>
-          {option}
-        </FeedbackBtn>
-      ))}
+      {options.map(option => {
+        return (
+          <FeedbackBtn key={option} onClick={() => onLeaveFeedback(option)}>
+            {option}
+          </FeedbackBtn>
+        );
+      })}
+      {/* <FeedbackBtn onClick={() => onLeaveFeedbackGood()}>Good</FeedbackBtn>
+      <FeedbackBtn onClick={() => onLeaveFeedbackNeutral()}>
+        Neutral
+      </FeedbackBtn>
+      <FeedbackBtn onClick={() => onLeaveFeedbackBad()}>Bad</FeedbackBtn> */}
     </FeedbackBtnDiv>
   );
 };
@@ -49,10 +62,13 @@ Statistics.propTypes = {
   neutral: PropTypes.number.isRequired,
   bad: PropTypes.number.isRequired,
   total: PropTypes.number.isRequired,
-  positivePercentage: PropTypes.string.isRequired,
+  positivePercentage: PropTypes.number.isRequired,
 };
 
 FeedbackOptions.propTypes = {
   options: PropTypes.array.isRequired,
   onLeaveFeedback: PropTypes.func.isRequired,
+  // onLeaveFeedbackGood: PropTypes.func.isRequired,
+  // onLeaveFeedbackNeutral: PropTypes.func.isRequired,
+  // onLeaveFeedbackBad: PropTypes.func.isRequired,
 };
